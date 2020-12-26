@@ -1,18 +1,32 @@
 import React from 'react';
-
+import axios from "axios";
+import Moive from './Movie.js';
 
 class App extends React.Component {
   state={
-    isLoading: true
+    isLoading: true,
+    movies: []
   };
-  componentDidMount(){
-    setTimeout(()=>{
-      this.setState({isLoading: false});
-    },6000);
+  //axios를 쓰는 방법 1
+  //따로 함수를 만들어서 호출하기 함수에는 async, axios에는 await
+  getMovies= async ()=>{
+    // axios가 완료될 때까지 좀 걸려서 await을 넣음
+    const {data:{data:{movies}}} = await axios.get("https://yts-proxy.now.sh/list_movies.json?sort_by=rating");
+    this.setState({movies, isLoading: false})//ES6 문법사용해서 movies:movies라는 것을 보여준다.
   }
+  async componentDidMount(){
+    this.getMovies();
+  }
+  //axios를 쓰는 방법 2
+  //자바스크립트한테 좀 걸리다고 말하려면 async를 사용해야함
+  // async componentDidMount(){
+  //   const moives = axios.get("https://yts-proxy.now.sh/list_movies.json");
+  // }
   render(){
-    const {isLoading} = this.state;
-    return <div>{isLoading ? "Loading..." : "We are ready"}</div>
+    const {isLoading, movies} = this.state;
+    return <div>{isLoading ? "Loading..." : movies.map(movie=>(
+      <Moive key = {movie.id} id = {movie.id} year= {movie.year} title={movie.title} summary={movie.summary} poster={movie.medium_cover_image}/>
+    ))}</div>
   }
 }
 
