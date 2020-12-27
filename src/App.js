@@ -1,20 +1,27 @@
-import React from 'react';
+import React from "react";
 import axios from "axios";
-import Moive from './Movie.js';
+import Moive from "./Movie";
+import "./App.css";
 
 class App extends React.Component {
-  state={
+  state = {
     isLoading: true,
-    movies: []
+    movies: [],
   };
   //axios를 쓰는 방법 1
   //따로 함수를 만들어서 호출하기 함수에는 async, axios에는 await
-  getMovies= async ()=>{
+  getMovies = async () => {
     // axios가 완료될 때까지 좀 걸려서 await을 넣음
-    const {data:{data:{movies}}} = await axios.get("https://yts-proxy.now.sh/list_movies.json?sort_by=rating");
-    this.setState({movies, isLoading: false})//ES6 문법사용해서 movies:movies라는 것을 보여준다.
-  }
-  async componentDidMount(){
+    const {
+      data: {
+        data: { movies },
+      },
+    } = await axios.get(
+      "https://yts-proxy.now.sh/list_movies.json?sort_by=rating"
+    );
+    this.setState({ movies, isLoading: false }); //ES6 문법사용해서 movies:movies라는 것을 보여준다.
+  };
+  async componentDidMount() {
     this.getMovies();
   }
   //axios를 쓰는 방법 2
@@ -22,11 +29,31 @@ class App extends React.Component {
   // async componentDidMount(){
   //   const moives = axios.get("https://yts-proxy.now.sh/list_movies.json");
   // }
-  render(){
-    const {isLoading, movies} = this.state;
-    return <div>{isLoading ? "Loading..." : movies.map(movie=>(
-      <Moive key = {movie.id} id = {movie.id} year= {movie.year} title={movie.title} summary={movie.summary} poster={movie.medium_cover_image}/>
-    ))}</div>
+  render() {
+    const { isLoading, movies } = this.state;
+    return (
+      <section className="container">
+        {isLoading ? (
+          <div className="loader">
+            <span className="loader__text">Loading...</span>
+          </div>
+        ) : (
+          <div className="movies">
+            {movies.map((movie) => (
+              <Moive
+                key={movie.id}
+                id={movie.id}
+                year={movie.year}
+                title={movie.title}
+                summary={movie.summary}
+                poster={movie.medium_cover_image}
+                genres={movie.genres}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+    );
   }
 }
 
